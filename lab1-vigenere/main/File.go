@@ -1,28 +1,25 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
+	"strconv"
 )
 
-func readFile(path string) (string, error) {
-	data, err := ioutil.ReadFile(path)
+func createFilePath(prefix string, suffix string, number int) string {
+	return prefix + strconv.Itoa(number) + suffix
+}
+
+func readFile(path string, charSize int) (string, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		return "", err
 	}
-	return string(data), nil
-}
+	defer file.Close()
 
-func writeToFile(path string, text string) error {
-	file, err := os.Create(path)
+	text := make([]byte, charSize)
+	_, err = file.Read(text)
 	if err != nil {
-		return err
+		return "", err
 	}
-	_, err = file.WriteString(text)
-	if err != nil {
-		file.Close()
-		return err
-	}
-	err = file.Close()
-	return err
+	return string(text), nil
 }

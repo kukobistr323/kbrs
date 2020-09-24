@@ -5,11 +5,15 @@ import (
 	"strings"
 )
 
-const Key = "oil"
-const LGramLength = 3
+var Keys = []string{"dog", "norm", "hello", "format", "subline", "specific", "substring", "television", "intelligent",
+	"abbreviation"}
 
-const Input = "lab1-vigenere/resources/input.txt"
-const Encrypted = "lab1-vigenere/resources/encrypted.txt"
+const LGramLength = 5
+
+const Tests = 10
+
+const Prefix = "lab1-vigenere/resources/text"
+const Suffix = ".txt"
 
 var FreqEn = map[rune]float64{'a': 0.08167, 'b': 0.01492, 'c': 0.02782, 'd': 0.04253, 'e': 0.12702, 'f': 0.0228,
 	'g': 0.02015, 'h': 0.06094, 'i': 0.06966, 'j': 0.00153, 'k': 0.00772, 'l': 0.04025, 'm': 0.02406, 'n': 0.06749,

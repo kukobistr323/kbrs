@@ -1,10 +1,5 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
-
 func getKeySize(text string, lGramLength int) int {
 	repeat := make([]int, 0, len(text))
 	size := len(text) - lGramLength + 1
@@ -26,7 +21,7 @@ func getKeySize(text string, lGramLength int) int {
 	return getIndexOfMaxElem(nods)
 }
 
-func decrypt(text string, keySize int) string {
+func decryptKey(text string, keySize int) string {
 
 	caesar := make([][]rune, keySize, keySize)
 
@@ -34,33 +29,13 @@ func decrypt(text string, keySize int) string {
 		caesar[i%keySize] = append(caesar[i%keySize], c)
 	}
 
-	decryptedCaesar := make([][]rune, keySize, keySize)
+	decryptedKey := make([]rune, keySize, keySize)
 
-	for i, str := range caesar {
-		decryptedCaesar[i%keySize] = decryptCaesar(str)
+	for _, str := range caesar {
+		decryptedKey = append(decryptedKey, getKeyLetter(str))
 	}
 
-	decrypted := make([]rune, 0, len(text))
-
-	for i := 0; i < len(text); i++ {
-		decrypted = append(decrypted, decryptedCaesar[i%keySize][i/keySize])
-	}
-	fmt.Println(string(decrypted))
-	return ""
-}
-
-func decryptCaesar(text []rune) []rune {
-	shift := getKeyLetter(text)
-	decrypted := make([]rune, 0, len(text))
-
-	for _, c := range text {
-		if strings.ContainsRune(En, c) {
-			decrypted = append(decrypted, (c-shift)%Alphabet+a)
-		} else {
-			decrypted = append(decrypted, c)
-		}
-	}
-	return decrypted
+	return string(decryptedKey)
 }
 
 func getKeyLetter(text []rune) rune {
@@ -75,6 +50,5 @@ func getKeyLetter(text []rune) rune {
 			decrKeyLetter = i
 		}
 	}
-	fmt.Printf("%c\n", decrKeyLetter)
 	return decrKeyLetter
 }

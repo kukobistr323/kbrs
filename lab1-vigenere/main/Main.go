@@ -5,21 +5,36 @@ import (
 	"log"
 )
 
+var hits = make([]int, Tests)
+
 func main() {
-	text, err := readFile(Input)
+	//for i, key := range Keys {
+	//	for j := 0; j < 2; j++ {
+	//		go decrypt(i, j, key)
+	//	}
+	//}
+	//time.Sleep(20 * time.Second)
+	decrypt(0, 0, Keys[0])
+	fmt.Println(hits)
+}
+
+func decrypt(charSize int, textNumber int, key string) {
+	text, err := readFile(createFilePath(Prefix, Suffix, textNumber+1), (charSize+1)*1000)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if writeToFile(Encrypted, encrypt(text, Key)) != nil {
-		log.Fatal(err)
-	}
+	encrypted := encrypt(text, key)
 
-	text, err = readFile(Encrypted)
-	if err != nil {
-		log.Fatal(err)
-	}
+	keySize := getKeySize(encrypted, LGramLength)
 
-	keySize := getKeySize(text, LGramLength)
-	fmt.Println(keySize)
-	fmt.Println(decrypt(text, keySize))
+	decryptedKey := decryptKey(encrypted, keySize)
+
+	fmt.Println(decryptedKey)
+	fmt.Println(len(decryptedKey))
+	fmt.Println(Keys[charSize])
+	fmt.Println(len(key))
+
+	if decryptedKey == key {
+		hits[charSize]++
+	}
 }
