@@ -2,11 +2,15 @@ package main
 
 import (
 	"os"
-	"strconv"
 )
 
-func createFilePath(prefix string, suffix string, number int) string {
-	return prefix + strconv.Itoa(number) + suffix
+const PrefixInput = "lab1-vigenere/resources/text"
+const SuffixInput = ".txt"
+const PrefixOutput = "lab1-vigenere/resources/"
+const SuffixOutput = ".png"
+
+func createFilePath(prefix string, suffix string, name string) string {
+	return prefix + name + suffix
 }
 
 func readFile(path string, charSize int) (string, error) {

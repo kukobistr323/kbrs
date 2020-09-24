@@ -29,7 +29,7 @@ func decryptKey(text string, keySize int) string {
 		caesar[i%keySize] = append(caesar[i%keySize], c)
 	}
 
-	decryptedKey := make([]rune, keySize, keySize)
+	decryptedKey := make([]rune, 0, keySize)
 
 	for _, str := range caesar {
 		decryptedKey = append(decryptedKey, getKeyLetter(str))
