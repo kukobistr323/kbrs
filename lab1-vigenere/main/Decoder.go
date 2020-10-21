@@ -15,7 +15,7 @@ func getKeySize(text string, lGramLength int) int {
 	nods := make([]int, len(text))
 	for i := 0; i < len(repeat); i++ {
 		for j := i + 1; j < len(repeat); j++ {
-			nods[gcd(repeat[i], repeat[j])]++
+			nods[Gcd(repeat[i], repeat[j])]++
 		}
 	}
 	return getIndexOfMaxElem(nods)

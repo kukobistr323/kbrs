@@ -55,11 +55,11 @@ func sum(array []float64) float64 {
 	return result
 }
 
-func gcd(a int, b int) int {
+func Gcd(a int, b int) int {
 	if b == 0 {
 		return a
 	} else {
-		return gcd(b, a%b)
+		return Gcd(b, a%b)
 	}
 }
 
