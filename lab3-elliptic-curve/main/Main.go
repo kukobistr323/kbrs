@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	util "kbrs/lab1-vigenere/main"
-	"math"
 )
 
 type Group struct {
@@ -23,12 +21,14 @@ func main() {
 		b: 17,
 		m: 23,
 	}
-	ab := generateAB(group.m)
-	fmt.Printf("Length of (a,b) is %v\n", len(ab))
+	//ab := generateAB(group.m)
+	//fmt.Printf("Length of (a,b) is %v\n", len(ab))
 	//fmt.Println(ab)
-	points := generatePoints(group)
-	fmt.Printf("Length of points is %v\n", len(points))
-	fmt.Println(points)
+	//points := generatePoints(group)
+	//fmt.Printf("Length of points is %v\n", len(points))
+	//fmt.Println(points)
+
+	fmt.Println(add(Point{16, 5}, Point{16, 5}, group))
 }
 
 func generateAB(m int) []Point {
@@ -64,45 +64,51 @@ func modSquareRoot(n int, p int) []int {
 	return squares
 }
 
-func movInverse(b int, m int) int {
-	g := util.Gcd(b, m)
+func modInverse(b int, m int) int {
+	var x, y int
+	g := gcdExtended(b, m, &x, &y)
 	if g != 1 {
 		return -1
+	}
+
+	return (x%m + m) % m
+}
+
+func modDivide(a int, b int, m int) int {
+	a = a % m
+	inv := modInverse(b, m)
+	if inv == -1 {
+		return -1
 	} else {
-		return
+		return (inv * a) % m
 	}
 }
 
-func modDivide(a int, b int, m int) {
-	a = a % m
-inv:
+func gcdExtended(a, b int, x, y *int) int {
+	if a == 0 {
+		*x = 0
+		*y = 1
+		return b
+	}
+	var x1, y1 int
+	gcd := gcdExtended(b%a, a, &x1, &y1)
+	*x = y1 - (b/a)*x1
+	*y = x1
+	return gcd
 }
 
 //func scalarMultiply(n int, p Point) Point {
 //
 //}
-//
-//func add(p1 Point, p2 Point, g Group) Point {
-//	var l
-//	if p1 == p2 {
-//
-//	} else {
-//		l = (p2.y + (-p1.y)%g.m) % g.m + (p2.x+(-p1.x)%g.m)%g.m
-//	}
-//}
 
-//func scalarMultiply(n int64, p Point) Point {
-//	for _, bit := range reverse(strconv.FormatInt(n, 2)) {
-//		if bit == 1 {
-//
-//		}
-//	}
-//}
-//
-//func reverse(s string) string {
-//	runes := []rune(s)
-//	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-//		runes[i], runes[j] = runes[j], runes[i]
-//	}
-//	return string(runes)
-//}
+func add(p1 Point, p2 Point, g Group) Point {
+	var l int
+	if p1 == p2 {
+		l = (3*(p1.x*p1.x%g.m)%g.m + g.a) % g.m * modInverse(2*p1.y%g.m, g.m) % g.m
+	} else {
+		l = ((p2.y + (-p1.y)%g.m) % g.m * modInverse((p2.x+(-p1.x)%g.m)%g.m, g.m)) % g.m
+	}
+	x3 := ((l*l%g.m-p1.x%g.m+g.m)%g.m - p2.x%g.m + g.m) % g.m
+	y3 := l * (((p1.x-x3+g.m)%g.m - p1.y + g.m) % g.m) % g.m
+	return Point{x3, y3}
+}
