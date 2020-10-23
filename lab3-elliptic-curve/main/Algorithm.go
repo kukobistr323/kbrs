@@ -2,7 +2,7 @@ package main
 
 import (
 	"crypto/sha512"
-	"fmt"
+	"encoding/binary"
 	"strconv"
 )
 
@@ -48,23 +48,35 @@ func swapKeys(n int, g Point, group Group) (Keys, Keys) {
 	return a, b
 }
 
-func createSignature(n int, g Point, group Group, a Keys) int {
+func createSignature(message string, n int, g Point, group Group, a Keys) (int, int) {
 	r := 0
+	s := 0
 	k := 0
-	hash := hash(n, Message)
-	fmt.Println(hash)
-	for r == 0 {
-		k = random(2, n-1)
-		kG := scalarMultiply(int64(k), g, group)
-		r = mod(kG.x, n)
+	hash := hash(n, message)
+	for s == 0 {
+		for r == 0 {
+			k = random(2, n-1)
+			kG := scalarMultiply(int64(k), g, group)
+			r = mod(kG.x, n)
+		}
+		s = mod(modInverse(k, n)*(hash+a.nA*r), n)
 	}
-	//s := mod(modInverse(k, n)*(hash(n, Message)+a.nA*r), n)
-	return 1
+	return r, s
 }
 
 func hash(n int, message string) int {
 	byte64Hash := sha512.Sum512([]byte(message))
 	byteHash := byte64Hash[:]
-	hash, _ := strconv.Atoi(string(byteHash[:len(strconv.FormatInt(int64(n), 2))]))
-	return hash
+	hash := strconv.FormatUint(binary.BigEndian.Uint64(byteHash), 2)[:len(strconv.FormatInt(int64(n), 2))]
+	hashInt, _ := strconv.ParseInt(hash, 2, 64)
+	return int(hashInt)
+}
+
+func checkSignature(message string, r, s, n int, g Point, group Group, a Keys) int {
+	hash := hash(n, message)
+	w := mod(modInverse(s, n), n)
+	u1 := mod(hash*w, n)
+	u2 := mod(r*w, n)
+	p := add(scalarMultiply(int64(u1), g, group), scalarMultiply(int64(u2), a.pA, group), group)
+	return mod(p.x, n)
 }
